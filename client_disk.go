@@ -234,6 +234,12 @@ type DiskClient interface {
 		retries ...RetryStrategy,
 	) (DiskUpdate, error)
 
+	StartCopyDiskToStorageDomain(
+		id string,
+		storageDomainID string,
+		retries ...RetryStrategy,
+		)(DiskUpdate, error)
+
 	// UpdateDisk updates the specified disk with the specified parameters. Use UpdateDiskParams to
 	// obtain a builder for the parameters structure.
 	UpdateDisk(
