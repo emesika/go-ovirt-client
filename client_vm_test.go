@@ -276,10 +276,12 @@ func assertCanStartVM(t *testing.T, vm ovirtclient.VM) {
 	})
 }
 
-func assertVMWillStart(t *testing.T, vm ovirtclient.VM) {
-	if _, err := vm.WaitForStatus(ovirtclient.VMStatusUp); err != nil {
+func assertVMWillStart(t *testing.T, vm ovirtclient.VM) ovirtclient.VM {
+	vm, err := vm.WaitForStatus(ovirtclient.VMStatusUp)
+	if err != nil {
 		t.Fatalf("Failed to wait for VM status to reach \"up\". (%v)", err)
 	}
+	return vm
 }
 
 func assertCanStopVM(t *testing.T, vm ovirtclient.VM) {
@@ -292,4 +294,17 @@ func assertVMWillStop(t *testing.T, vm ovirtclient.VM) {
 	if _, err := vm.WaitForStatus(ovirtclient.VMStatusDown); err != nil {
 		t.Fatalf("Failed to wait for VM status to reach \"down\". (%v)", err)
 	}
+}
+
+func assertCanCreateBootableVM(t *testing.T, helper ovirtclient.TestHelper) ovirtclient.VM {
+	vm1 := assertCanCreateVM(
+		t,
+		helper,
+		helper.GenerateRandomID(5),
+		nil,
+	)
+	disk1 := assertCanCreateDisk(t, helper)
+	assertCanUploadDiskImage(t, helper, disk1)
+	assertCanAttachDisk(t, vm1, disk1)
+	return vm1
 }
